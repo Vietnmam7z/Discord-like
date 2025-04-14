@@ -1,0 +1,7 @@
+{
+    "users": {
+        "trung123": "password1",
+        "admin": "adminpass",
+        "guest": "guestpass"
+    }
+}
