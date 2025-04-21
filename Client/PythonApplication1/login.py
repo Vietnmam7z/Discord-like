@@ -1,8 +1,11 @@
-﻿import tkinter as tk
+﻿from http import cookiejar
+import tkinter as tk
 import client
 import socket
 import threading
 import peer
+import GUI
+import json
 
 def login(username, password, login_window, response_label):
     """ Gửi thông tin đăng nhập đến server & xử lý phản hồi """
@@ -30,12 +33,17 @@ def receive_response(client_socket, login_window, response_label, username):
 
     try:
         response = client_socket.recv(1024).decode()
-        if response == "code:1:1":
-            response_label.config(text="Đăng nhập thành công", fg="green")  # Hiển thị chữ xanh
-            login_window.after(500, login_window.destroy)  # Đóng cửa sổ sau 0.5 giây
-            
-            peer_start = True  # Đánh dấu để gọi Peer
-
+        if response.startswith("code:1:"):
+            parts = response.split(":")
+            if len(parts) > 3:
+                result = parts[1]
+                channel_list_json = parts[3]
+                # Chuyển đổi JSON thành danh sách Python
+                channel_list = json.loads(channel_list_json)
+                GUI.update_list_channel(channel_list)
+                response_label.config(text="Đăng nhập thành công", fg="green")  # Hiển thị chữ xanh
+                login_window.after(500, login_window.destroy)  # Đóng cửa sổ sau 0.5 giây
+                peer_start = True  # Đánh dấu để gọi Peer
         elif response == "code:1:0":
             response_label.config(text="Thông tin đăng nhập sai", fg="red")  # Hiển thị chữ đỏ
 
@@ -48,6 +56,8 @@ def receive_response(client_socket, login_window, response_label, username):
         # Chỉ khởi động Peer nếu đăng nhập thành công
         if peer_start:
             peer.init_peer(username)
+            GUI.show_main_ui()
+            
 
 
 def open_login_window():

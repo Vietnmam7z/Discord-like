@@ -2,7 +2,7 @@
 import time
 import argparse
 from threading import Thread
-
+import threading 
 def get_host_default_interface_ip():
     """ Xác định địa chỉ IP của máy """
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -52,6 +52,7 @@ def chat_session(client_socket):
         print(f"Lỗi: {e}")
     finally:
         client_socket.close()
+        
 
 def connect_server(threadnum, host, port):
     """ Tạo nhiều luồng để kết nối song song với server """
@@ -60,7 +61,7 @@ def connect_server(threadnum, host, port):
     [t.join() for t in threads]
 
 if __name__ == "__main__":
-    host = get_host_default_interface_ip()  # Lấy IP tự động
+    host = '10.0.3.212'  # Lấy IP tự động
     port = 22236  # Port cố định
 
     print(f"Đang kết nối đến server tại {host}:{port}...")

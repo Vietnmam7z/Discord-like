@@ -3,7 +3,11 @@ import threading
 import login  # Nhúng login.py để kiểm tra tài khoản
 import register
 import time
-
+import channel
+import json
+import changestate
+import chat
+import sync
 # --- Dữ liệu chia sẻ và Khóa ---
 peers = {} # Dictionary lưu thông tin peer
 # Key: tuple (ip, port_str) - Port là port mà peer lắng nghe, do peer gửi lên
@@ -14,6 +18,7 @@ peers_lock = threading.Lock() # Lock để bảo vệ truy cập vào 'peers'
 SERVER_PORT = 22236 # Port mặc định của Tracker
 BUFFER_SIZE = 4096 # Kích thước bộ đệm nhận dữ liệu
 PEER_TIMEOUT_SECONDS = 60 # Thời gian timeout cho peer không hoạt động (tùy chọn)
+active_peers = []
 
 def get_host_default_interface_ip():
     """ Lấy địa chỉ IP của máy """
@@ -27,63 +32,155 @@ def get_host_default_interface_ip():
        s.close()
     return ip
 
+def store_socket(conn, addr):
+    global active_peers
+    for i, (existing_conn, existing_addr) in enumerate(active_peers):
+        if existing_addr[0] == addr[0]:  # Nếu IP đã tồn tại
+            active_peers[i] = (conn, addr)  # Cập nhật socket & cổng
+            return
+    active_peers.append((conn, addr))
+    
+def remove_connection_by_addr(target_addr):
+    """Xóa kết nối dựa trên địa chỉ IP & Port"""
+    global active_peers  # Sử dụng danh sách toàn cục
+    initial_count = len(active_peers)  # Số lượng peer trước khi xóa
+    active_peers = [(conn, addr) for conn, addr in active_peers if addr != target_addr]
+
 def new_connection(addr, conn):
     peer_ip = addr[0] # Đây sẽ là IP công cộng của peer (hoặc router của peer)
     peer_tracker_port = addr[1] # Port mà peer dùng để kết nối *đến* tracker
     peer_listen_key = None # Sẽ là tuple (ip, listening_port_str) của peer sau khi SUBMIT
     current_username = "Unknown" # Giữ lại để logging rõ hơn
-
+    active_peers = []
+    
     global tracker_socket, peer_list
     active_socket = None
     try:
         data = conn.recv(1024).decode().strip()
         print(f"Nhận từ {addr}: {data}")  # Debug: Kiểm tra dữ liệu nhận được
-        if data.startswith("code:1:account:"):  # Xử lý đăng nhập
+        if data.startswith("code:0:account:"):  # Xử lý đăng ký
             parts = data.split(":")
             if len(parts) == 6:
                 username, password = parts[3], parts[5]
-                result = login.verify_account(username, password)  # Kiểm tra tài khoản
-                response = f"code:1:{result}"
-                print(f"Gửi phản hồi cho {addr}: {response}")  # Debug
-                conn.sendall(response.encode())
-
-        elif data.startswith("code:0:account:"):  # Xử lý đăng ký
-            parts = data.split(":")
-            if len(parts) == 6:
-                username, password = parts[3], parts[5]
-
-                result = register.register_account(username, password)  # Kiểm tra trùng tài khoản
-                response = f"code:0:{result}"  # Đăng ký thành công
-                print(f"Gửi phản hồi cho {addr}: {response}")  # Debug
+                ip, port = addr
+                sync.update_connection(username,ip,port)
+                result = register.register_account(username, password)  
+                response = f"code:0:{result}"  
+                print(f"Gửi phản hồi cho {addr}: {response}")  
                 conn.sendall(response.encode())
                 
-        elif data.startswith == "SUBMIT:":
-                # Định dạng: SUBMIT <listening_port> <username> <status>
-             parts = data.split(":")
-             if len(parts) == 4:
-                listening_port_str = parts[1]
-                username = parts[2]
-                status = parts[3]
-                # Key nên dùng IP mà tracker thấy (peer_ip) và port peer lắng nghe
-                peer_listen_key = (peer_ip, listening_port_str)
-                current_username = username # Cập nhật username
+        elif data.startswith("code:1:account:"):  
+            parts = data.split(":")
+            username, password = parts[3], parts[5]
+            ip, port = addr
+            sync.update_connection(username,ip,port)            
+            result = login.verify_account(username, password) 
+            channel_list = channel.get_user_channels(username)
 
-                with peers_lock:
-                    peers[peer_listen_key] = {
-                        'ip': peer_ip,             # IP công cộng của Peer (do tracker thấy)
-                        'port': listening_port_str,# Port P2P Peer lắng nghe
-                        'username': username,
-                        'status': status,
-                        'last_seen': time.time()
-                    }
-                # Log này nên rõ ràng IP lưu trữ là IP tracker thấy
-                print(f"[Tracker] Peer '{username}' ({peer_ip}:{listening_port_str}) đã SUBMIT/cập nhật. IP '{peer_ip}' được lưu trữ.")
-                try:
-                    conn.sendall("SUBMIT_OK\n".encode('utf-8'))
-                except socket.error as send_e:
-                     print(f"[Tracker] Lỗi gửi SUBMIT_OK đến {addr}: {send_e}")
-            # ... (Các lệnh khác như GETLIST, DISCONNECT giữ nguyên) ...
+            # Chuyển danh sách thành JSON
+            channel_list_json = json.dumps(channel_list)
+            response = f"code:1:{result}:{channel_list_json}"
 
+            print(f"Gửi phản hồi cho {addr}: {response}")  
+            conn.sendall(response.encode())
+
+        elif data.startswith("code:2"):
+            parts = data.split(":")
+            channel_name = parts[4]
+            username = parts[3]
+            ip, port = addr
+            sync.update_connection(username,ip,port)
+            store_socket(conn, addr)
+            result = channel.get_channel_members(channel_name)
+            chat_data = chat.get_channel_chat(channel_name)
+            response = f"code|2|{result}|{chat_data}"  
+            print(f"Gửi phản hồi cho {addr}: {response}") 
+            conn.sendall(response.encode())
+                
+        elif data.startswith("code:3"):
+            parts = data.split(":")
+            username = parts[2]
+            ip, port = addr
+            sync.update_connection(username,ip,port) 
+            active_peers.append((conn, addr))
+            state = parts[3]
+            if state == "invisible":
+                state = "offline"
+                store_socket(conn, addr)
+            if state == "offline":
+                remove_connection_by_addr(addr)
+            changestate.update_user_status(username,state)
+
+        elif data.startswith("code:4"):
+            parts = data.split(":")
+            username = parts[2]
+            ip, port = addr
+            sync.update_connection(username,ip,port)
+            store_socket(conn, addr)
+            channel_name = parts[3]
+            result = channel.join_channel_on_server(username,channel_name)
+            response = f"code:4:{result}"
+            conn.sendall(response.encode())
+            print(f"Gửi phản hồi cho {addr}: {response}")  # Debug
+            
+            
+        elif data.startswith("code:5"):
+            parts = data.split(":")
+            username = parts[2]
+            ip, port = addr
+            sync.update_connection(username,ip,port)
+            store_socket(conn, addr)
+            channel_list = channel.get_user_channels(username)
+            channel_list_json = json.dumps(channel_list)
+            response = f"code:5:{channel_list_json}"
+            conn.sendall(response.encode())  
+            print(f"Gửi phản hồi cho {addr}: {response}")  # Debug
+               
+            
+        elif data.startswith("code:6"):
+            parts = data.split(":")
+            username = parts[2]
+            channel_name = parts[3]
+            ip, port = addr
+            sync.update_connection(username,ip,port)
+            store_socket(conn, addr)
+            result = channel.add_channel(username,channel_name)
+            chat.create_chat_file(channel_name)
+            response = f"code:6:{result}"
+            conn.sendall(response.encode())       
+            print(f"Gửi phản hồi cho {addr}: {response}")  # Debug
+    
+        elif data.startswith("code:7"):
+            count = 0  # Đếm số lần gặp `:`
+            index = -1  # Vị trí của dấu `:` thứ 3
+            for i, char in enumerate(data):  # Duyệt từng ký tự trong chuỗi
+                if char == ":":
+                    count += 1
+                    if count == 3:  # Nếu là dấu `:` thứ 3
+                        index = i
+                        break  # Thoát vòng lặp khi tìm thấy
+                    
+            prefix_data = data[:index]
+            remaining_data = data[index+1:]
+            parts = prefix_data.split(":")
+            username = parts[2]  # Lấy tên người gửi
+            ip, port = addr
+            sync.update_connection(username,ip,port)
+            store_socket(conn, addr)
+            remaining_data = remaining_data.replace("'", "\"") 
+            message_list = json.loads(remaining_data)    
+            channel_name_to_send = ""
+            for message in message_list:
+                channel_name = message["channel"]  # Lấy tên kênh từ tin nhắn đầu tiên
+                channel_name_to_send = channel_name
+                content = message["content"]  # Lấy nội dung tin nhắn
+                chat.process_received_message(username, channel_name, content)
+            chat_data = chat.get_channel_chat(channel_name_to_send)
+            response = f"code|7|{chat_data}"     
+            conn.sendall(response.encode()) 
+            
+                
+            
     except socket.error as e:
         print(f"[Tracker] Lỗi socket với {addr} ({current_username}): {e}")
     except Exception as e:

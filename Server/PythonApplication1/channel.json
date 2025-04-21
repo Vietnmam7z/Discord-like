@@ -1,0 +1,78 @@
+{
+    "channels": [
+        {
+            "name": "general",
+            "users": [
+                {
+                    "username": "trung1",
+                    "status": "online"
+                },
+                {
+                    "username": "anhtuan",
+                    "status": "online"
+                },
+                {
+                    "username": "ad",
+                    "status": "offline"
+                },
+                {
+                    "username": "1",
+                    "status": "online"
+                }
+            ],
+            "chat": "general_chat.json"
+        },
+        {
+            "name": "random",
+            "users": [
+                {
+                    "username": "trung1",
+                    "status": "online"
+                },
+                {
+                    "username": "ad",
+                    "status": "offline"
+                },
+                {
+                    "username": "1",
+                    "status": "online"
+                }
+            ],
+            "chat": "random_chat.json"
+        },
+        {
+            "name": "hello",
+            "users": [
+                {
+                    "username": "1",
+                    "status": "online"
+                }
+            ],
+            "chat": "hello_chat.json"
+        },
+        {
+            "name": "hi",
+            "users": [
+                {
+                    "username": "1",
+                    "status": "online"
+                }
+            ],
+            "chat": "hi_chat.json"
+        },
+        {
+            "name": "ngu",
+            "users": [
+                {
+                    "username": "123",
+                    "status": "offline"
+                },
+                {
+                    "username": "1",
+                    "status": "online"
+                }
+            ],
+            "chat": "ngu_chat.json"
+        }
+    ]
+}

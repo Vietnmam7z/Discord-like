@@ -1,0 +1,24 @@
+{
+    "messages": [
+        {
+            "timestamp": "2025-04-21 16:30:00",
+            "sender": "Trung",
+            "content": "Chào mọi người!"
+        },
+        {
+            "sender": "anhtuan",
+            "timestamp": "2025-04-21 22:36:36",
+            "content": "hello"
+        },
+        {
+            "sender": "trung1",
+            "timestamp": "2025-04-21 22:36:47",
+            "content": "hi"
+        },
+        {
+            "sender": "anhtuan",
+            "timestamp": "2025-04-21 22:36:54",
+            "content": "chao"
+        }
+    ]
+}
