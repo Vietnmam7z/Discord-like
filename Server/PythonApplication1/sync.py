@@ -1,6 +1,6 @@
 ﻿import json
 
-def get_connection_info(username, filename="G:/Downloads/Discord-like/Server/PythonApplication1/connection.json"):   
+def get_connection_info(username, filename="D:/Discord-like/Server/PythonApplication1/connection.json"):
     with open(filename, "r", encoding="utf-8-sig") as f:
         data = json.load(f)  # Đọc dữ liệu JSON
  
@@ -9,7 +9,7 @@ def get_connection_info(username, filename="G:/Downloads/Discord-like/Server/Pyt
             return {"ip": connection["ip"], "port": connection["port"]}  # Trả về ip & port
 
 
-def add_connection(username, ip, port, filename="G:/Downloads/Discord-like/Server/PythonApplication1/connection.json"):
+def add_connection(username, ip, port, filename="D:/Discord-like/Server/PythonApplication1/connection.json"):
     with open(filename, "r", encoding="utf-8-sig") as f:
         data = json.load(f)  # Đọc dữ liệu JSON
 
@@ -18,7 +18,7 @@ def add_connection(username, ip, port, filename="G:/Downloads/Discord-like/Serve
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-def update_connection(username, new_ip, new_port, filename="G:/Downloads/Discord-like/Server/PythonApplication1/connection.json"):
+def update_connection(username, new_ip, new_port, filename="D:/Discord-like/Server/PythonApplication1/connection.json"):
     with open(filename, "r", encoding="utf-8-sig") as f:
         data = json.load(f)  # Đọc dữ liệu JSON
     user_found = False

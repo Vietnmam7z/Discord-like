@@ -1,6 +1,6 @@
 ﻿import json
 import peer
-def add_to_cache(channel, content, filename="G:/Downloads/Discord-like/Client/PythonApplication1/cache.json"):
+def add_to_cache(channel, content, filename="D:/Discord-like/Client/PythonApplication1/cache.json"):
     new_message = {"channel": channel, "content": content, "sent": 0}  # Tin nhắn mới
     with open(filename, "r", encoding="utf-8-sig") as f:
         cache_data = json.load(f)
@@ -9,7 +9,7 @@ def add_to_cache(channel, content, filename="G:/Downloads/Discord-like/Client/Py
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(cache_data, f, indent=4, ensure_ascii=False)
 
-def get_unsent_messages(filename="G:/Downloads/Discord-like/Client/PythonApplication1/cache.json"):
+def get_unsent_messages(filename="D:/Discord-like/Client/PythonApplication1/cache.json"):
     with open(filename, "r", encoding="utf-8-sig") as f:
         cache_data = json.load(f)
     messages_to_send = []  # Danh sách tin nhắn cần gửi
@@ -18,7 +18,7 @@ def get_unsent_messages(filename="G:/Downloads/Discord-like/Client/PythonApplica
             messages_to_send.append({"channel": msg["channel"], "content": msg["content"]})
     return messages_to_send  # Trả về danh sách tin nhắn chưa gửi
 
-def mark_messages_as_sent(filename="G:/Downloads/Discord-like/Client/PythonApplication1/cache.json"):
+def mark_messages_as_sent(filename="D:/Discord-like/Client/PythonApplication1/cache.json"):
     with open(filename, "r", encoding="utf-8-sig") as f:
         cache_data = json.load(f)
     for msg in cache_data.get("messages", []):
@@ -27,7 +27,7 @@ def mark_messages_as_sent(filename="G:/Downloads/Discord-like/Client/PythonAppli
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(cache_data, f, indent=4, ensure_ascii=False)
         
-def clear_cache(filename="G:/Downloads/Discord-like/Client/PythonApplication1/cache.json"):
+def clear_cache(filename="D:/Discord-like/Client/PythonApplication1/cache.json"):
     empty_cache = {"messages": []}  # Giữ cấu trúc JSON gốc nhưng xóa dữ liệu
 
     with open(filename, "w", encoding="utf-8") as f:

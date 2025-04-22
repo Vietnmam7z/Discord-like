@@ -14,7 +14,7 @@ def register(username, password, confirm_password, label, window):
         label.config(text="Mật khẩu không khớp!", fg="red")
         return  
 
-    host = client.get_host_default_interface_ip()
+    host = "10.28.128.17"
     port = 22236
     
     try:

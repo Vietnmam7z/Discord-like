@@ -102,7 +102,7 @@ def send_p2p_message(message):
 
 def reconnect(username, status="online"):
     global my_username, my_status, my_listen_port, my_ip, client_socket
-    tracker_ip = client.get_host_default_interface_ip()  
+    tracker_ip = "10.28.128.17"
     tracker_port = 22236
     client_socket = client.create_client_socket(tracker_ip, tracker_port)
     tracker_thread = threading.Thread(target=tracker_handler, args=(tracker_ip, tracker_port), name="TrackerHandler", daemon=True)
@@ -113,7 +113,7 @@ def init_peer(username, status="online"):
     global my_username, my_status, my_listen_port, my_ip, client_socket
     my_username = username
     my_status = status
-    tracker_ip = client.get_host_default_interface_ip()  
+    tracker_ip = "10.28.128.17"
     tracker_port = 22236
     client_socket = client.create_client_socket(tracker_ip, tracker_port)
     my_listen_port = client_socket.getsockname()[1]  
