@@ -1,6 +1,6 @@
 ﻿import json
 import time
-def get_channel_chat(channel_name, filename_prefix="G:/Downloads/Discord-like/Server/PythonApplication1/chat/"):
+def get_channel_chat(channel_name, filename_prefix="D:/Discord-like/Server/PythonApplication1/chat/"):
     """Lấy toàn bộ dữ liệu chat từ file <channel_name>_chat.json"""
     chat_file = f"{filename_prefix}{channel_name}_chat.json"
     
@@ -17,7 +17,7 @@ def get_channel_chat(channel_name, filename_prefix="G:/Downloads/Discord-like/Se
         print(f"[Error] File chat bị lỗi JSON ({chat_file}): {str(e)}")
         return "[]"
     
-def process_received_message(username, channel_name, message_data, base_path="G:/Downloads/Discord-like/Server/PythonApplication1/chat/"):
+def process_received_message(username, channel_name, message_data, base_path="D:/Discord-like/Server/PythonApplication1/chat/"):
     """Xử lý dữ liệu chat, tìm file chat và ghi tin nhắn vào đó"""
     chat_file_path = f"{base_path}{channel_name}_chat.json"
 
@@ -31,7 +31,7 @@ def process_received_message(username, channel_name, message_data, base_path="G:
 
 import json
 
-def create_chat_file(channel_name, base_path="G:/Downloads/Discord-like/Server/PythonApplication1/chat/"):
+def create_chat_file(channel_name, base_path="D:/Discord-like/Server/PythonApplication1/chat/"):
     chat_file_path = f"{base_path}{channel_name}_chat.json"
     chat_data = {"messages": []}  
     with open(chat_file_path, "w", encoding="utf-8") as f:

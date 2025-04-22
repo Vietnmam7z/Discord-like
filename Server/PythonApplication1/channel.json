@@ -9,7 +9,7 @@
                 },
                 {
                     "username": "anhtuan",
-                    "status": "online"
+                    "status": "offline"
                 },
                 {
                     "username": "ad",
@@ -70,9 +70,37 @@
                 {
                     "username": "1",
                     "status": "online"
+                },
+                {
+                    "username": "hotuan",
+                    "status": "offline"
                 }
             ],
             "chat": "ngu_chat.json"
+        },
+        {
+            "name": "hotuan",
+            "users": [
+                {
+                    "username": "hotuan",
+                    "status": "offline"
+                }
+            ],
+            "chat": "hotuan_chat.json"
+        },
+        {
+            "name": "trai thuong dien",
+            "users": [
+                {
+                    "username": "1",
+                    "status": "online"
+                },
+                {
+                    "username": "anhtuan",
+                    "status": "offline"
+                }
+            ],
+            "chat": "trai thuong dien_chat.json"
         }
     ]
 }

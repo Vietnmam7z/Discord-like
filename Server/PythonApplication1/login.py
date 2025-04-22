@@ -3,13 +3,13 @@
 def load_users():
     """ Đọc danh sách tài khoản từ file JSON """
     try:
-        with open("G:/Downloads/Discord-like/Server/PythonApplication1/users.json", "r") as file:
+        with open("D:/Discord-like/Server/PythonApplication1/users.json", "r") as file:
             data = json.load(file)
             return data.get("users", {})  # Trả về danh sách tài khoản
     except FileNotFoundError:
         return {}  # Nếu file không tồn tại, trả về danh sách rỗng
 
-def update_user_status(username, filename="G:/Downloads/Discord-like/Server/PythonApplication1/channel.json"):
+def update_user_status(username, filename="D:/Discord-like/Server/PythonApplication1/channel.json"):
     """ Cập nhật trạng thái của user trong tất cả các kênh """
     try:
         # Đọc dữ liệu từ file JSON
@@ -32,6 +32,7 @@ def update_user_status(username, filename="G:/Downloads/Discord-like/Server/Pyth
 def verify_account(username, password):
     """ Kiểm tra tài khoản, trả về 1 nếu đúng, 0 nếu sai """
     users = load_users()
+    print(users)
     if username in users and users[username] == password:
         update_user_status(username)
         return "1"  # Tài khoản hợp lệ

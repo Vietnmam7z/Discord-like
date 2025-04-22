@@ -1,6 +1,6 @@
 ﻿import json
 
-def update_user_status(username, state, filename="G:/Downloads/Discord-like/Server/PythonApplication1/channel.json."):
+def update_user_status(username, state, filename="D:/Discord-like/Server/PythonApplication1/channel.json."):
     try:
         with open(filename, "r", encoding="utf-8") as f:
             data = json.load(f)

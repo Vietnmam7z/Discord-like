@@ -3,7 +3,7 @@ import json
 def get_user_channels(username):
     try:
         # Đọc file channel.json
-        with open("G:/Downloads/Discord-like/Server/PythonApplication1/channel.json", "r", encoding='utf-8') as file:
+        with open("D:/Discord-like/Server/PythonApplication1/channel.json", "r", encoding='utf-8') as file:
             data = json.load(file)
         user_channels = []
         # Duyệt qua từng channel trong data
@@ -29,7 +29,7 @@ def get_user_channels(username):
 def get_channel_members(channel_name):
     try:
         # Đọc file channel.json
-        with open("G:/Downloads/Discord-like/Server/PythonApplication1/channel.json", "r", encoding='utf-8') as file:
+        with open("D:/Discord-like/Server/PythonApplication1/channel.json", "r", encoding='utf-8') as file:
             data = json.load(file)
         # Duyệt qua từng channel trong data
         for channel in data.get("channels", []):
@@ -56,7 +56,7 @@ def get_channel_members(channel_name):
         print(f"[Error] Lỗi khi đọc file channel.json: {str(e)}")
         return []
     
-def join_channel_on_server(username, channel_name, filename="G:/Downloads/Discord-like/Server/PythonApplication1/channel.json"):
+def join_channel_on_server(username, channel_name, filename="D:/Discord-like/Server/PythonApplication1/channel.json"):
     try:
         # Đọc dữ liệu từ file JSON
         with open(filename, "r", encoding="utf-8") as f:
@@ -80,7 +80,7 @@ def join_channel_on_server(username, channel_name, filename="G:/Downloads/Discor
         print(f"Lỗi khi xử lý tham gia kênh: {e}")
         return "-1" 
     
-def add_channel(username, channel_name, filename="G:/Downloads/Discord-like/Server/PythonApplication1/channel.json"):
+def add_channel(username, channel_name, filename="D:/Discord-like/Server/PythonApplication1/channel.json"):
     try:
         # Đọc file channel.json
         with open(filename, "r", encoding='utf-8') as f:
@@ -107,7 +107,7 @@ def add_channel(username, channel_name, filename="G:/Downloads/Discord-like/Serv
         data["channels"].append(new_channel)
 
         # Ghi lại vào file channel.json
-        with open("G:/Downloads/Discord-like/Server/PythonApplication1/channel.json", "w", encoding='utf-8') as file:
+        with open("D:/Discord-like/Server/PythonApplication1/channel.json", "w", encoding='utf-8') as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
         print(f"[Success] Đã tạo kênh '{channel_name}'.")
@@ -121,7 +121,7 @@ def add_channel(username, channel_name, filename="G:/Downloads/Discord-like/Serv
         print(f"[Error] Lỗi khi thêm kênh: {str(e)}")
         return "0"
 
-def get_online_users_in_channel(channel_name, filename="G:/Downloads/Discord-like/Server/PythonApplication1/channel.json"):
+def get_online_users_in_channel(channel_name, filename="D:/Discord-like/Server/PythonApplication1/channel.json"):
     """Tìm danh sách user online trong kênh cụ thể"""
     try:
         with open(filename, "r", encoding='utf-8') as file:
